@@ -1,0 +1,13 @@
+Metadata-Version: 1.0
+Name: pytfd
+Version: 0.0dev-r2
+Summary: pytfd: A library of time-frequency distributions.
+Home-page: UNKNOWN
+Author: Edin Salkovic
+Author-email: edin.salkovic@gmail.com
+License: BSD
+Description: pytfd is a python library of the most common time-frequency distributions used in
+        signal processing.  It builds upon numpy.
+        
+Keywords: science engineering dsp
+Platform: UNKNOWN

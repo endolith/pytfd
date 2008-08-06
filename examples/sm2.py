@@ -2,8 +2,8 @@ from __future__ import division
 from pylab import *
 from numpy import *
 from numpy.fft import *
-# from pytfd import stft
-from pytfd.stft import *
+from pytfd import sm
+#from pytfd.sm import *
 
 N = 2048
 T = 64
@@ -25,6 +25,7 @@ y1 = concatenate([x2[:N//4], x1, x2[N//4:]]) + x3
 y2 = concatenate([x1, x2]) + x4
 
 w = ones(T)
+P = ones(3)
 for i in (1, 2):
     figure()
     y = globals()['y%d'%i]
@@ -35,9 +36,9 @@ for i in (1, 2):
     plot(f[:N//2], Y[N//2:])
     savefig('2sin_linear_FM_%d_signal_FT'%i)
     figure()
-    Y_stft = stft(y, w)
-    contour(t, f[:N//2], abs(Y_stft)[N//2:])
+    Y_sm = sm.sm(y, w, P)
+    contour(t, f[:N//2], abs(Y_sm)[N//2:])
     xlabel("Time")
     ylabel("Frequency")
-    title(r"STFT T = %d$T_s$"%T)
-    savefig('2sin_linear_FM_%d_stft'%i)
+    title(r"SM T = %d$T_s$"%T)
+    savefig('2sin_linear_FM_%d_sm'%i)
