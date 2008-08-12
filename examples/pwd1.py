@@ -22,7 +22,8 @@ for i, T in enumerate([64, 128]):
     y = sin(2*pi*10*t) + sin(2*pi*30*t) + delta1 + delta2
     Y_pwd = pwd(y, w)
     figure()
-    contour(t, 2*f[:N//2], abs(Y_pwd)[N//2:])
+    #contour(t, 2*f[:N//2], abs(Y_pwd)[N//2:])
+    imshow(abs(Y_pwd)[N//2:])
     xlabel("Time")
     ylabel("Frequency")
     title(r"PWD T = %d$T_s$"%T)

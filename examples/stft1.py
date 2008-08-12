@@ -12,7 +12,8 @@ for i, T in enumerate([32, 64, 128]):
     y = sin(2*pi*10*t) + sin(2*pi*30*t) + delta1 + delta2
     Y_stft = stft(y, w)
     figure()
-    contour(t, f[:N//2], abs(Y_stft)[N//2:])
+    #contour(t, f[:N//2], abs(Y_stft)[N//2:])
+    imshow(abs(Y_stft)[N//2:])
     xlabel("Time")
     ylabel("Frequency")
     title(r"STFT T = %d$T_s$"%T)

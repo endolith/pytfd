@@ -1,5 +1,9 @@
 '''Plot data supporting the __array_interface__ (e.g. numpy arrays, PIL images, etc.).
-
+>>> import numpy
+>>> height,width,depth = 25, 25, 4
+>>> arr = numpy.arange( width*height*depth, dtype=numpy.uint8)
+>>> arr.shape = height,width,depth
+>>> display(arr)
 '''
 import numpy
 
@@ -8,51 +12,38 @@ from pyglet import window
 from pyglet import image
 from pygarrayimage.arrayimage import ArrayInterfaceImage
 
+from sympy.plotting.managed_window import ManagedWindow
 
-#pyglet.app.run()
 
-def update(dt):
-    print "Hello"
-pyglet.clock.schedule_interval(update, 0.1)
+
+class WindowArray(ManagedWindow):
+    def __init__(self, **win_args):
+        self.array = win_args.pop('array')
+        self.aii = ArrayInterfaceImage(self.array)
+        super(WindowArray, self).__init__(**win_args)
+
+    def draw(self):
+        self.aii.texture.blit(0, 0, 0)
+
+    def setup(self):
+        img = self.aii.texture
+
+        self.width = img.width
+        self.height = img.height
+        self.set_visible()
+
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 
 def display(arr):
-    w = window.Window(visible=False, resizable=True)
-
-    aii = ArrayInterfaceImage(arr)
-
-    img = aii.texture
-
-    w.width = img.width
-    w.height = img.height
-    w.set_visible()
-
-    glEnable(GL_BLEND)
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-    @w.event
-    def on_draw():
-        w.dispatch_events()
-        w.clear()
-        img.blit(0, 0, 0)
-
-    event_loop = pyglet.app.EventLoop()
-
-    @event_loop.event
-    def on_window_close(window):
-        print len(pyglet.app.windows)
-
-    event_loop.run()
-
-
-        #  while not w.has_exit:
-#         w.dispatch_events()
-#         img.blit(0, 0, 0)
-#         w.flip()
+    w = WindowArray(visible=False, resizable=True, array=arr)
 
 
 def contour(arr):
-    display(numpy.uint8(arr))
+    if arr.dtype != 'uint8':
+        arr = numpy.uint8(arr/arr.max()*255)
+    display(arr)
 
 
 def _test():

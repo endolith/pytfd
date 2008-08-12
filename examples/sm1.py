@@ -17,14 +17,15 @@ for i, T in enumerate([32, 64]):
     delta2[3*N//4] = 5
     y = sin(2*pi*10*t) + sin(2*pi*30*t) + delta1 + delta2
     Y_sm = sm(y, w, P)
-    pytfd.plot.contour(abs(Y_sm)[N//2:])
+    #pytfd.plot.contour(abs(Y_sm)[N//2:])
     #x, y = meshgrid(t, f)
-    #x, y = mgrid[0:256, 0:256]
+    #x, y = mg rid[0:256, 0:256]
     #M.surf(x, y, abs(Y_sm))
     #M.surf(x, y, lambda x,y:sin(x**2 + y**2))
     #M.axes()
     #M.title('Demoing mlab.surf')
-#     figure()
+    figure()
+    imshow(abs(Y_sm)[N//2:])
 #     contour(t, f[:N//2], abs(Y_sm)[N//2:])
 #     xlabel("Time")
 #     ylabel("Frequency")
