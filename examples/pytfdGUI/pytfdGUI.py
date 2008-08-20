@@ -62,7 +62,7 @@ class CanvasFrame(wx.Frame):
         self.canvas = FigureCanvas(self, -1, self.figure)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.add_buttonbar()
+        self.add_buttonbars()
         self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
         self.add_toolbar()  # comment this out for no toolbar
 
@@ -100,18 +100,37 @@ class CanvasFrame(wx.Frame):
         self.SetSizer(self.sizer)
         self.Fit()
 
-    def add_buttonbar(self):
-        self.button_bar = wx.Panel(self)
-        self.button_bar_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.sizer.Add(self.button_bar, 0, wx.LEFT | wx.TOP | wx.GROW)
+    def add_buttonbars(self):
+        # Signals
+        self.signal_bar = wx.Panel(self)
+        self.sizer.Add(self.signal_bar, 0, wx.LEFT | wx.TOP | wx.GROW)
 
+        self.signal_bar_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        label = wx.StaticText(self.signal_bar, label="Izaberite distribuciju:")
+        self.signal_bar_sizer.Add(label, 1, wx.GROW)
+        for i, (mt, dist) in enumerate(signals):
+            bm = mathtext_to_wxbitmap(mt)
+            button = wx.BitmapButton(self.signal_bar, 1000 + i, bm)
+            self.signal_bar_sizer.Add(button, 1, wx.GROW)
+            self.Bind(wx.EVT_BUTTON, self.OnChangeSignal, button)
+
+        self.signal_bar.SetSizer(self.signal_bar_sizer)
+
+        # Distributions
+        self.distribution_bar = wx.Panel(self)
+        self.sizer.Add(self.distribution_bar, 0, wx.LEFT | wx.TOP | wx.GROW)
+
+        self.distribution_bar_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        label = wx.StaticText(self.distribution_bar, label="Izaberite distribuciju:")
+        self.distribution_bar_sizer.Add(label, 1, wx.GROW)
         for i, (mt, dist) in enumerate(distributions):
             bm = mathtext_to_wxbitmap(mt)
-            button = wx.BitmapButton(self.button_bar, 1000 + i, bm)
-            self.button_bar_sizer.Add(button, 1, wx.GROW)
+            button = wx.BitmapButton(self.distribution_bar, 1000 + i, bm)
+            self.distribution_bar_sizer.Add(button, 1, wx.GROW)
             self.Bind(wx.EVT_BUTTON, self.OnChangeDistribution, button)
 
-        self.button_bar.SetSizer(self.button_bar_sizer)
+        self.distribution_bar.SetSizer(self.distribution_bar_sizer)
+
 
     def add_toolbar(self):
         """Copied verbatim from embedding_wx2.py"""
