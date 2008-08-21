@@ -106,13 +106,12 @@ class CanvasFrame(wx.Frame):
         self.sizer.Add(self.signal_bar, 0, wx.LEFT | wx.TOP | wx.GROW)
 
         self.signal_bar_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        label = wx.StaticText(self.signal_bar, label="Izaberite distribuciju:")
+        label = wx.StaticText(self.signal_bar, label="Izaberite signal:")
         self.signal_bar_sizer.Add(label, 1, wx.GROW)
-        for i, (mt, dist) in enumerate(signals):
-            bm = mathtext_to_wxbitmap(mt)
-            button = wx.BitmapButton(self.signal_bar, 1000 + i, bm)
-            self.signal_bar_sizer.Add(button, 1, wx.GROW)
-            self.Bind(wx.EVT_BUTTON, self.OnChangeSignal, button)
+
+        listbox = wx.Choice(self.signal_bar, choices=[i[0] for i in signals])
+        self.Bind(wx.EVT_CHOICE, self.OnChangeSignal, listbox)
+        self.signal_bar_sizer.Add(listbox, 1, wx.GROW)
 
         self.signal_bar.SetSizer(self.signal_bar_sizer)
 
@@ -123,11 +122,10 @@ class CanvasFrame(wx.Frame):
         self.distribution_bar_sizer = wx.BoxSizer(wx.HORIZONTAL)
         label = wx.StaticText(self.distribution_bar, label="Izaberite distribuciju:")
         self.distribution_bar_sizer.Add(label, 1, wx.GROW)
-        for i, (mt, dist) in enumerate(distributions):
-            bm = mathtext_to_wxbitmap(mt)
-            button = wx.BitmapButton(self.distribution_bar, 1000 + i, bm)
-            self.distribution_bar_sizer.Add(button, 1, wx.GROW)
-            self.Bind(wx.EVT_BUTTON, self.OnChangeDistribution, button)
+
+        listbox = wx.Choice(self.distribution_bar, choices=[i[0] for i in distributions])
+        self.Bind(wx.EVT_CHOICE, self.OnChangeDistribution, listbox)
+        self.distribution_bar_sizer.Add(listbox, 1, wx.GROW)
 
         self.distribution_bar.SetSizer(self.distribution_bar_sizer)
 
@@ -156,11 +154,28 @@ class CanvasFrame(wx.Frame):
         self.process()
 
     def OnChangeSignal(self, event):
-        self.change_signal(event.GetId() - 2000)
+        self.change_signal(event.GetString())
 
-    def change_signal(self, signal_number):
-        self.signal = signals[signal_number][1]
-        self.process()
+    def change_signal(self, signal_name):
+        self.signal = None
+        for (text, signal) in signals:
+            if text == signal_name:
+                self.signal = signal
+                self.process()
+        if self.signal is None:
+            raise AttributeError
+
+    def OnChangeDistribution(self, event):
+        self.change_distribution(event.GetString())
+
+    def change_distribution(self, distribution_name):
+        self.distribution = None
+        for (text, distribution) in distributions:
+            if text == distribution_name:
+                self.distribution = distribution
+                self.process()
+        if self.distribution is None:
+            raise AttributeError
 
     def process(self):
         s = self.distribution(self.signal)
