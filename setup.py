@@ -47,6 +47,5 @@ setup(
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     include_package_data=True,
     zip_safe=True,
-    install_requires=["numpy"
-    ],
+    #install_requires=["numpy>=1.0"],
 )
