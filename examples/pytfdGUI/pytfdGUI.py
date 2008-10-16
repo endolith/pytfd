@@ -17,6 +17,8 @@ IS_GTK = 'wxGTK' in wx.PlatformInfo
 IS_WIN = 'wxMSW' in wx.PlatformInfo
 IS_MAC = 'wxMac' in wx.PlatformInfo
 
+DIST_CACHE = {}
+
 ############################################################
 # This is where the "magic" happens.
 from matplotlib.mathtext import MathTextParser
@@ -55,14 +57,12 @@ class CanvasFrame(wx.Frame):
 
         self.figure = Figure()
         self.axes = self.figure.add_subplot(111)
-        self.distribution = distributions[0][1]
-        self.signal = signals[0][1]
-        self.process()
 
         self.canvas = FigureCanvas(self, -1, self.figure)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.add_buttonbars()
+        self.add_choices()
+        #self.add_button_plot()
         self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
         self.add_toolbar()  # comment this out for no toolbar
 
@@ -74,33 +74,39 @@ class CanvasFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnExit)
         menuBar.Append(menu, "&File")
 
-        if IS_GTK or IS_WIN:
-            # Signals menu
-            menu = wx.Menu()
-            for i, (mt, signal) in enumerate(signals):
-                bm = mathtext_to_wxbitmap(mt)
-                item = wx.MenuItem(menu, 2000 + i, "")
-                item.SetBitmap(bm)
-                menu.AppendItem(item)
-                self.Bind(wx.EVT_MENU, self.OnChangeSignal, item)
-            menuBar.Append(menu, "&Signals")
+        #~ if IS_GTK or IS_WIN:
+            #~ # Signals menu
+            #~ menu = wx.Menu()
+            #~ for i, (mt, signal) in enumerate(signals):
+                #~ bm = mathtext_to_wxbitmap(mt)
+                #~ item = wx.MenuItem(menu, 2000 + i, "")
+                #~ item.SetBitmap(bm)
+                #~ menu.AppendItem(item)
+                #~ self.Bind(wx.EVT_MENU, self.OnChangeSignal, item)
+            #~ menuBar.Append(menu, "&Signals")
 
-            # Equation Menu
-            menu = wx.Menu()
-            for i, (mt, dist) in enumerate(distributions):
-                bm = mathtext_to_wxbitmap(mt)
-                item = wx.MenuItem(menu, 1000 + i, "")
-                item.SetBitmap(bm)
-                menu.AppendItem(item)
-                self.Bind(wx.EVT_MENU, self.OnChangeDistribution, item)
-            menuBar.Append(menu, "&Distributions")
+            #~ # Equation Menu
+            #~ menu = wx.Menu()
+            #~ for i, (mt, dist) in enumerate(distributions):
+                #~ bm = mathtext_to_wxbitmap(mt)
+                #~ item = wx.MenuItem(menu, 1000 + i, "")
+                #~ item.SetBitmap(bm)
+                #~ menu.AppendItem(item)
+                #~ self.Bind(wx.EVT_MENU, self.OnChangeDistribution, item)
+            #~ menuBar.Append(menu, "&Distributions")
 
         self.SetMenuBar(menuBar)
 
         self.SetSizer(self.sizer)
         self.Fit()
 
-    def add_buttonbars(self):
+        # Initial plot
+        self.distribution_name = distributions[0][0]
+        self.signal_name = signals[0][0]
+        self.process()
+
+
+    def add_choices(self):
         # Signals
         self.signal_bar = wx.Panel(self)
         self.sizer.Add(self.signal_bar, 0, wx.LEFT | wx.TOP | wx.GROW)
@@ -110,6 +116,7 @@ class CanvasFrame(wx.Frame):
         self.signal_bar_sizer.Add(label, 1, wx.GROW)
 
         listbox = wx.Choice(self.signal_bar, choices=[i[0] for i in signals])
+        listbox.SetSelection(0)
         self.Bind(wx.EVT_CHOICE, self.OnChangeSignal, listbox)
         self.signal_bar_sizer.Add(listbox, 1, wx.GROW)
 
@@ -124,11 +131,19 @@ class CanvasFrame(wx.Frame):
         self.distribution_bar_sizer.Add(label, 1, wx.GROW)
 
         listbox = wx.Choice(self.distribution_bar, choices=[i[0] for i in distributions])
+        listbox.SetSelection(0)
         self.Bind(wx.EVT_CHOICE, self.OnChangeDistribution, listbox)
         self.distribution_bar_sizer.Add(listbox, 1, wx.GROW)
 
         self.distribution_bar.SetSizer(self.distribution_bar_sizer)
 
+    #~ def add_button_plot(self):
+        #~ self.button_plot = wx.Button(self, label="Plot!")
+        #~ self.Bind(wx.EVT_BUTTON, self.OnButtonPlot, self.button_plot)
+        #~ self.sizer.Add(self.button_plot, 0, wx.LEFT | wx.TOP | wx.GROW)
+
+    #~ def OnButtonPlot(self, event):
+        #~ self.process()
 
     def add_toolbar(self):
         """Copied verbatim from embedding_wx2.py"""
@@ -143,45 +158,63 @@ class CanvasFrame(wx.Frame):
             self.sizer.Add(self.toolbar, 0, wx.LEFT | wx.EXPAND)
         self.toolbar.update()
 
-    def OnPaint(self, event):
-        self.canvas.draw()
+    #~ def OnPaint(self, event):
+        #~ self.canvas.draw()
+        #~ self.Refresh()
 
-    def OnChangeDistribution(self, event):
-        self.change_distribution(event.GetId() - 1000)
+    #~ def OnChangeDistribution(self, event):
+        #~ self.change_distribution(event.GetId() - 1000)
 
-    def change_distribution(self, dist_number):
-        self.distribution = distributions[dist_number][1]
-        self.process()
+    #~ def change_distribution(self, dist_number):
+        #~ self.distribution = distributions[dist_number][1]
+        #~ self.process()
 
     def OnChangeSignal(self, event):
         self.change_signal(event.GetString())
 
     def change_signal(self, signal_name):
-        self.signal = None
-        for (text, signal) in signals:
-            if text == signal_name:
-                self.signal = signal
-                self.process()
-        if self.signal is None:
-            raise AttributeError
+        self.signal_name = signal_name
+        self.process()
 
     def OnChangeDistribution(self, event):
         self.change_distribution(event.GetString())
 
     def change_distribution(self, distribution_name):
-        self.distribution = None
-        for (text, distribution) in distributions:
-            if text == distribution_name:
-                self.distribution = distribution
-                self.process()
-        if self.distribution is None:
-            raise AttributeError
+        self.distribution_name = distribution_name
+        self.process()
 
     def process(self):
-        s = self.distribution(self.signal)
+        key = (self.distribution_name, self.signal_name) #Used for caching
+        if key in DIST_CACHE:
+            s = DIST_CACHE[key]
+        else:
+            distribution = None
+            for (text, _distribution) in distributions:
+                if text == self.distribution_name:
+                    distribution = _distribution
+            if distribution is None:
+                raise AttributeError
+
+            signal = None
+            for (text, _signal) in signals:
+                if text == self.signal_name:
+                    signal = _signal
+            if signal is None:
+                raise AttributeError
+
+            s = distribution(signal)
+            DIST_CACHE[key] = s
+
         self.axes.clear()
         self.axes.imshow(s)
+        #print dir(self.axes)
+        #print dir(self)
+        self.canvas.draw()
         self.Refresh()
+
+    #~ def OnPaint(self, event):
+        #~ self.canvas.draw()
+        #~ self.Refresh()
 
     def OnExit(self, event):
         self.Close()
@@ -194,6 +227,6 @@ class MyApp(wx.App):
         frame.Show(True)
         return True
 
-app = MyApp()
+app = MyApp(redirect=False)
 app.MainLoop()
 
