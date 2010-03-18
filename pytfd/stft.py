@@ -1,4 +1,4 @@
-"""This file defines the Short-Time Fourier Transfor (STFT)
+"""This file defines the Short-Time Fourier Transform (STFT)
 or more precisely the Discrete Time and Frequency STFT.
 """
 from __future__ import division
@@ -14,7 +14,7 @@ def stft(x, w, L=None):
     #T = len(w)
     if L is None:
         L = N
-    # Zerro pad the window
+    # Zero pad the window
     w = h.zeropad(w, N)
     X_stft = []
     points = range(0, N, N//L)

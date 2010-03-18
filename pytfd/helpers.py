@@ -1,4 +1,4 @@
-"""This file defines the some helper functions/variables
+"""This file defines some helper functions/variables
 needed for implementation of TFDs.
 """
 from __future__ import division
