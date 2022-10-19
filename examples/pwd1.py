@@ -13,7 +13,7 @@ t_max = N * Ts
 t = linspace(0, t_max, N)
 
 
-for i, T in enumerate([64, 128]):
+for T in [64, 128]:
     w = windows.rectangular(T) # Rectangular window
     delta1 = zeros(N)
     delta1[N//4] = 5

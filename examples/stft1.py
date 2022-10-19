@@ -3,7 +3,7 @@ from test_data1 import *
 from pytfd.stft import *
 from pytfd import windows
 
-for i, T in enumerate([32, 64, 128]):
+for T in [32, 64, 128]:
     w = windows.rectangular(T) # Rectangular window
     delta1 = zeros(N)
     delta1[N//4] = 5
