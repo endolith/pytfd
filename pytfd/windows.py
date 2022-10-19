@@ -8,14 +8,12 @@ def gaussian(T, a=1):
     L = T//2
     t = numpy.linspace(-L, L, T)
     N = L//2
-    w = numpy.exp(-((t)/(a*N))**2)
-    return w
+    return numpy.exp(-((t)/(a*N))**2)
 
 def kaiser(T):
     T = T//2
     t = numpy.linspace(-T, T, 2*T)
-    w = 0.42 + 0.5*numpy.cos(t*pi/T) + 0.08*numpy.cos(2*t*pi/T)
-    return w
+    return 0.42 + 0.5*numpy.cos(t*pi/T) + 0.08*numpy.cos(2*t*pi/T)
 
 __all__ = [
     "hanning",

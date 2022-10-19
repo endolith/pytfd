@@ -7,7 +7,7 @@ from pytfd import windows
 #from enthought.mayavi import mlab as M
 
 
-for i, T in enumerate([32, 64]):
+for T in [32, 64]:
     w = windows.rectangular(T) # Rectangular window
     P = windows.hanning(2 + 1)
     #P = array([0, 1, 0])
